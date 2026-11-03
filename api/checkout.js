@@ -42,20 +42,19 @@ export default async function handler(req, res) {
       await supabase.from('profiles').update({ stripe_customer_id: customer }).eq('id', user.id);
     }
 
-    // URL fixa de produção com fallback para evitar o redirecionamento para localhost
-const reqOrigin = req.headers.origin || req.headers.referer?.replace(/\/$/, '');
-const origin = process.env.PUBLIC_SITE_URL || reqOrigin || 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app';
+    // URL fixa da Vercel para garantir o redirecionamento pós-pagamento
+    const origin = 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app';
 
-const checkout = await stripe.checkout.sessions.create({
-  mode: 'subscription',
-  customer,
-  line_items: [{ price, quantity: 1 }],
-  client_reference_id: user.id,
-  metadata: { user_id: user.id },
-  subscription_data: { metadata: { user_id: user.id } },
-  success_url: `${origin}/?checkout=success`,
-  cancel_url: `${origin}/?checkout=cancel`,
-});
+    const checkout = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer,
+      line_items: [{ price, quantity: 1 }],
+      client_reference_id: user.id,
+      metadata: { user_id: user.id },
+      subscription_data: { metadata: { user_id: user.id } },
+      success_url: `${origin}/?checkout=success`,
+      cancel_url: `${origin}/?checkout=cancel`,
+    });
 
     return res.status(200).json({ url: checkout.url });
   } catch (e) {
