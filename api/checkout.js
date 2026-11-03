@@ -52,8 +52,8 @@ export default async function handler(req, res) {
       client_reference_id: user.id,
       metadata: { user_id: user.id },
       subscription_data: { metadata: { user_id: user.id } },
-      success_url: `${origin}/?checkout=success`,
-      cancel_url: `${origin}/?checkout=cancel`,
+      success_url: 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app/?checkout=success',
+      cancel_url: 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app/?checkout=cancel',
     });
 
     return res.status(200).json({ url: checkout.url });
