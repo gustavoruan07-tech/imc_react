@@ -43,18 +43,19 @@ export default async function handler(req, res) {
     }
 
     // URL fixa de produção com fallback para evitar o redirecionamento para localhost
-    const origin = process.env.PUBLIC_SITE_URL || 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app';
+const reqOrigin = req.headers.origin || req.headers.referer?.replace(/\/$/, '');
+const origin = process.env.PUBLIC_SITE_URL || reqOrigin || 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app';
 
-    const checkout = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      customer,
-      line_items: [{ price, quantity: 1 }],
-      client_reference_id: user.id,
-      metadata: { user_id: user.id },
-      subscription_data: { metadata: { user_id: user.id } },
-      success_url: 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app/?checkout=success',
-      cancel_url: 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app/?checkout=cancel',
-    });
+const checkout = await stripe.checkout.sessions.create({
+  mode: 'subscription',
+  customer,
+  line_items: [{ price, quantity: 1 }],
+  client_reference_id: user.id,
+  metadata: { user_id: user.id },
+  subscription_data: { metadata: { user_id: user.id } },
+  success_url: `${origin}/?checkout=success`,
+  cancel_url: `${origin}/?checkout=cancel`,
+});
 
     return res.status(200).json({ url: checkout.url });
   } catch (e) {
