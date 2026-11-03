@@ -42,7 +42,6 @@ export default async function handler(req, res) {
       await supabase.from('profiles').update({ stripe_customer_id: customer }).eq('id', user.id);
     }
 
-    // URL fixa da Vercel para garantir o redirecionamento pós-pagamento
     const origin = 'https://imc-react-b5jf-edz4539gk-gustavoruan.vercel.app';
 
     const checkout = await stripe.checkout.sessions.create({
